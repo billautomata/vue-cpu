@@ -34,10 +34,10 @@ export default {
   mounted () {
     this.$store.commit('rom/WRITE', { values: [2,100,3,101,4,101,1] })
     this.$store.commit('mem/INIT')
-    this.$store.commit('cpu/initialize')
+    this.$store.dispatch('cpu/initialize')
     setInterval(() => {
       this.$store.commit('cpu/CYCLE')
-    },1000)
+    },100)
   },
   computed: {
     registers: function () {

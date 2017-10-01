@@ -17,13 +17,10 @@ export default {
   },
   computed: {
     block: function () {
-      console.log('block fired', this.$props.name)
       return this.$store.getters[this.$props.name]
     }
   },
-  updated () {
-    console.log('hexdump updated', this.highlight)
-  }
+  updated () {}
 }
 </script>
 <style>

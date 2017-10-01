@@ -10,6 +10,9 @@ module.exports = {
       SP: 0,
       SR: 0,
       PC: 0
+    },
+    interrupts: {
+      RESET: 0
     }
   },
   getters :{
@@ -20,11 +23,16 @@ module.exports = {
       return state.controls
     }
   },
-  mutations: {
-    initialize (state, payload) {
-      state.controls.PC = 0
+  actions: {
+    initialize (context) {
       console.log('x-platform RAM', this.getters['mem/MEM'])
       console.log('x-platform ROM', this.getters['rom/ROM'])
+      context.commit('RESET')
+    }
+  },
+  mutations: {
+    RESET (state, payload) {
+      state.interrupts.RESET = 1
     },
     LDA (state, payload) {
       state.registers.A = payload.value
@@ -36,6 +44,12 @@ module.exports = {
       state.registers.Y = payload.value
     },
     CYCLE (state) {
+      // check interrupts if any perform that task and return
+      if(state.interrupts.RESET === 1){
+        state.interrupts.RESET = 0
+        state.PC = 0
+        return
+      }
       // read instruction at PC
       // increment PC
       // perform instruction at PC
@@ -44,12 +58,8 @@ module.exports = {
       if(machine_code_lut[instruction] === 'BRK'){
         return
       }
-      // console.log('instruction', instruction, machine_code_lut[instruction])
       this.commit('cpu/'+machine_code_lut[instruction], {value: this.getters['rom/ROM'][state.controls.PC+1] })
       state.controls.PC+=2
-      // if(state.controls.PC === 8){
-      //   state.controls.PC = 0
-      // }
     }
   }
 }
