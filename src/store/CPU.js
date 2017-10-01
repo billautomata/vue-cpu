@@ -21,6 +21,9 @@ module.exports = {
     },
     controls: function (state) {
       return state.controls
+    },
+    interrupts: function (state) {
+      return state.interrupts
     }
   },
   actions: {
@@ -44,10 +47,12 @@ module.exports = {
       state.registers.Y = payload.value
     },
     CYCLE (state) {
+      // do bus operations
+
       // check interrupts if any perform that task and return
       if(state.interrupts.RESET === 1){
         state.interrupts.RESET = 0
-        state.PC = 0
+        state.controls.PC = 0
         return
       }
       // read instruction at PC

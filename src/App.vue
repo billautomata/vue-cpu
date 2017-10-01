@@ -4,6 +4,7 @@
     <p>.X - {{registers.X}}</p>
     <p>.Y - {{registers.Y}}</p>
     <p>PC - {{controls.PC}}</p>
+    <p>RS - {{interrupts.RESET}}</p>
     <div style='clear: both;'>
       <p style='font-weight: 900'>ROM</p>
       <div style='padding-left: 20px;'>
@@ -33,11 +34,17 @@ export default {
   },
   mounted () {
     this.$store.commit('rom/WRITE', { values: [2,100,3,101,4,101,1] })
-    this.$store.commit('mem/INIT')
+    this.$store.dispatch('mem/INIT')
     this.$store.dispatch('cpu/initialize')
+
     setInterval(() => {
       this.$store.commit('cpu/CYCLE')
-    },100)
+    },30)
+
+    setInterval(() => {
+      this.$store.commit('cpu/RESET')
+    },301)
+
   },
   computed: {
     registers: function () {
@@ -45,6 +52,9 @@ export default {
     },
     controls: function () {
       return this.$store.getters['cpu/controls']
+    },
+    interrupts: function () {
+      return this.$store.getters['cpu/interrupts']
     },
     ROM: function () {
       return this.$store.getters['rom/ROM']
