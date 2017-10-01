@@ -1,35 +1,56 @@
 <template>
   <div id="app">
-    <p>A - {{registers.A}}</p>
-    <p>X - {{registers.X}}</p>
-    <p>Y - {{registers.Y}}</p>
+    <p>.A - {{registers.A}}</p>
+    <p>.X - {{registers.X}}</p>
+    <p>.Y - {{registers.Y}}</p>
     <p>PC - {{controls.PC}}</p>
-    <div>
-      <span v-for="(mem,index) in ROM" v-bind:mem="mem">{{mem}} - </span>
+    <div style='clear: both;'>
+      <p style='font-weight: 900'>ROM</p>
+      <div style='padding-left: 20px;'>
+        <hexdump v-bind:highlight="this.$store.getters['cpu/controls'].PC" v-bind:name="'rom/ROM'"></hexdump>
+      </div>
+    </div>
+    <div style='clear: both;'></div>
+    <div style='clear: both;'>
+      <p style='font-weight: 900'>MEM</p>
+      <div style='padding-left: 20px;'>
+        <hexdump v-bind:name="'mem/MEM'"></hexdump>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import HexDump from './components/hexdump.vue'
+
 export default {
   name: 'app',
+  components: {
+    'hexdump': HexDump
+  },
   data () {
     return {}
   },
   mounted () {
-    this.$store.commit('initialize', { ROM: [2,100,3,101,4,101,1]})
-    this.$store.commit('CYCLE')
-    //this.$store.commit('LDA', {value: 2})
+    this.$store.commit('rom/WRITE', { values: [2,100,3,101,4,101,1] })
+    this.$store.commit('mem/INIT')
+    this.$store.commit('cpu/initialize')
+    setInterval(() => {
+      this.$store.commit('cpu/CYCLE')
+    },1000)
   },
   computed: {
     registers: function () {
-      return this.$store.getters.registers
+      return this.$store.getters['cpu/registers']
     },
     controls: function () {
-      return this.$store.getters.controls
+      return this.$store.getters['cpu/controls']
     },
     ROM: function () {
-      return this.$store.getters.ROM
+      return this.$store.getters['rom/ROM']
+    },
+    MEM: function () {
+      return this.$store.getters['mem/MEM']
     }
   }
 }

@@ -1,18 +1,9 @@
 # vue-cpu
 
-> A Vue.js project
+Registers, Control Bits, Shared Memory Bus, Interrupts, Input/Output Pins
 
-## Build Setup
+## External Devices
+ROM, GPU, Direct Access VRAM, Audio Chip, Memory Pages
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-```
-
-For more information see the [docs for vueify](https://github.com/vuejs/vueify).
+## Emulation
+The CPU times the browser speed and sets a MHz target it can hit while keeping 60fps
