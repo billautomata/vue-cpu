@@ -22,7 +22,7 @@ Load the value in the X register to memory address index 100
 Set the IO pins for the memory value
 set the IO pins for the memory address
 
-| -------------------------- | -------------------------- | ----------------- |
+
 | CPU                        | BUS                        | memory            |
 | -------------------------- | -------------------------- | ----------------- |
 | W IO for value             | R CPU write pin - 0        |                   |   
