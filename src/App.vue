@@ -33,7 +33,7 @@ export default {
     return {}
   },
   mounted () {
-    this.$store.commit('rom/WRITE', { values: [2,100,3,101,4,101,1] })
+    this.$store.commit('rom/WRITE', { values: [1,100,2,101,100,1,101] })
     this.$store.dispatch('mem/INIT')
     this.$store.dispatch('cpu/initialize')
 

@@ -4,7 +4,9 @@ module.exports = {
     registers: {
       A: 0,
       X: 0,
-      Y: 0
+      Y: 0,
+      S: 0,
+      D: 0
     },
     controls: {
       SP: 0,
@@ -13,6 +15,10 @@ module.exports = {
     },
     interrupts: {
       RESET: 0
+    },
+    COUNTS: {
+      CYCLE: 0,
+      DELAY_UNTIL: 0
     }
   },
   getters :{
@@ -37,7 +43,13 @@ module.exports = {
     RESET (state, payload) {
       state.interrupts.RESET = 1
     },
-    LDA (state, payload) {
+    NOPN (state, payload) {
+      // none
+    },
+    LDAI (state, payload) {
+      state.registers.A = payload.value
+    },
+    LDAA (state, payload) {
       state.registers.A = payload.value
     },
     LDX (state, payload) {
@@ -46,33 +58,41 @@ module.exports = {
     LDY (state, payload) {
       state.registers.Y = payload.value
     },
-    CYCLE (state) {
-      // do bus operations
 
-      // check interrupts if any perform that task and return
-      if(state.interrupts.RESET === 1){
-        state.interrupts.RESET = 0
-        state.controls.PC = 0
-        return
-      }
-      // read instruction at PC
-      // increment PC
-      // perform instruction at PC
-      // console.log('PC', state.controls.PC)
+    CYCLE (state) {
       var instruction = this.getters['rom/ROM'][state.controls.PC]
-      if(machine_code_lut[instruction] === 'BRK'){
+      console.log('instruction', instruction, state.COUNTS.CYCLE)
+      if(instruction === undefined){
         return
       }
-      this.commit('cpu/'+machine_code_lut[instruction], {value: this.getters['rom/ROM'][state.controls.PC+1] })
-      state.controls.PC+=2
+      state.COUNTS.CYCLE += 1
+      // check interrupts if any perform that task and return
+      if(state.COUNTS.CYCLE < state.COUNTS.DELAY_UNTIL){
+        return
+      } else if (state.COUNTS.CYCLE === state.COUNTS.DELAY_UNTIL){
+        // actually execute the operation
+        // increment the PC
+        if(machine_code_lut[instruction] === 'BRK'){
+          return
+        } else {
+          this.commit('cpu/'+machine_code_lut[instruction].name+machine_code_lut[instruction].mode, {value: this.getters['rom/ROM'][state.controls.PC+1] })
+          state.controls.PC+=machine_code_lut[instruction].instruction_length
+        }
+      } else if (state.COUNTS.CYCLE > state.COUNTS.DELAY_UNTIL) {
+        // read instruction at PC
+        // set the delay_until
+        state.COUNTS.DELAY_UNTIL += machine_code_lut[instruction].cycles
+      }
     }
   }
 }
 
-var machine_code_lut = [
-  'NOP',
-  'BRK',
-  'LDA',
-  'LDX',
-  'LDY',
-]
+var machine_code_lut = require('./INSTRUCTIONS.js')
+
+// var machine_code_lut = [
+//   'NOP',
+//   'BRK',
+//   'LDA',
+//   'LDX',
+//   'LDY',
+// ]

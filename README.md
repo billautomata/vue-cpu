@@ -23,17 +23,17 @@ Set the IO pins for the memory value
 set the IO pins for the memory address
 
 
-| CPU                        | BUS                        | memory            |
-| -------------------------- | -------------------------- | ----------------- |
-| W IO for value             | R CPU write pin - 0        |                   |   
-| W IO for address           | R CPU write pin - 0        |                   |   
-| W write pin - 1            | R CPU write pin - 0        |                   |   
-| R done pin - 1             | R CPU write pin - 1        |                   |   
-| R done pin - 1             | W CPU done pin: 0          |                   |   
-| R done pin - 0             | R CPU value pins           |                   |   
-| W write pin - 0            | R CPU address pins         |                   |   
-| R done pin - 0             | W IO value to memory       | index::value      |
-| R done pin - 0             | W CPU done pin - 1         |                   |   
-| R done pin - 1             |                            |                   |   
-| ; memory written           |                            |                   |   
+| CPU                        | BUS                        | memory            | comment |
+| -------------------------- | -------------------------- | ----------------- | ------- |
+| W IO for value             | R CPU write pin - 0        |                   | BUS: R CPU/WRITE[0], CPU: (WRITE=0,DONE=1) set value pins
+| W IO for address           | R CPU write pin - 0        |                   | BUS: R CPU/WRITE[0], CPU: (WRITE=0,DONE=1) set address pins
+| W write pin - 1            | R CPU write pin - 0        |                   | BUS: R CPU/WRITE[0], CPU: (WRITE=0,DONE=1) write=1
+| R done pin - 1             | R CPU write pin - 1        |                   | BUS: R CPU/WRITE[1], CPU: (WRITE=1,DONE=1) if(DONE==1 && WRITE==1){ NOP (here) } else{ WRITE=0 }
+| R done pin - 1             | - W CPU done pin: 0        |                   | BUS: W CPU/DONE[0],  CPU: (WRITE=1,DONE=1) if(DONE==1 && WRITE==1){ NOP } else{ WRITE=0 (here) }
+| R done pin - 0             | - R CPU value pins         |                   | BUS: R value pins,   CPU: (WRITE=1,DONE=0) if(DONE==1) { JMP HOME } else { NOP (here) }
+| - W write pin - 0          | - R CPU address pins       |                   | BUS: R address pins, CPU: (WRITE=0,DONE=0) if(DONE==1) { JMP HOME } else { NOP (here) }
+| R done pin - 0             | - W IO value to memory     | index::value      | BUS: load value,     CPU: (WRITE=0,DONE=0) if(DONE==1) { JMP HOME } else { NOP (here) }
+| R done pin - 0             | - W CPU done pin - 1       |                   | BUS: W CPU/DONE[1],  CPU: (WRITE=0,DONE=0) if(DONE==1) { JMP HOME } else { NOP (here) }
+| R done pin - 1             |                            |                   | BUS: NOP,            CPU: (WRITE=0,DONE=1) if(DONE==1) { JMP HOME (here) } else { NOP }
+| - JMP HOME; memory written |                            |                   |
 | -------------------------- | -------------------------- | ----------------- |
